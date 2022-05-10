@@ -1,0 +1,62 @@
+Source: geoip2-database
+Priority: optional
+Section: net
+Maintainer: Walter Doekes <wjdoekes+geoip2-database@osso.nl>
+Build-Depends: debhelper (>= 7.0.50~), devscripts
+Standards-Version: 3.8.4
+Homepage: https://www.maxmind.com/en/geoip2-services-and-databases
+Vcs-Browser: https://github.com/ossobv/geoip2-database-deb
+
+Package: geoip2-database-asn
+Section: net
+Architecture: all
+Depends: ${misc:Depends}
+Description: GeoIP2 databases from MaxMind.com
+ GeoIP is a C library that enables the user to find the country that any
+ IP address or hostname originates from. It uses a file based database.
+ .
+ This database simply contains IP blocks as keys, and countries as values and
+ it should be more complete and accurate than using reverse DNS lookups.
+ .
+ This package contains the GeoLite2-ASN database.
+ .
+ Previously, this package was called geoip-database and it contained
+ /usr/share/GeoIP/GeoIP.dat and /usr/share/GeoIP/GeoIPv6.dat. Later MaxMind
+ changed the licensing causing Ubuntu/Debian not to be able to ship it,
+ because of legal issues in California.
+
+Package: geoip2-database-city
+Section: net
+Architecture: all
+Depends: ${misc:Depends}
+Description: GeoIP2 databases from MaxMind.com
+ GeoIP is a C library that enables the user to find the country that any
+ IP address or hostname originates from. It uses a file based database.
+ .
+ This database simply contains IP blocks as keys, and countries as values and
+ it should be more complete and accurate than using reverse DNS lookups.
+ .
+ This package contains the GeoLite2-City database.
+ .
+ Previously, this package was called geoip-database and it contained
+ /usr/share/GeoIP/GeoIP.dat and /usr/share/GeoIP/GeoIPv6.dat. Later MaxMind
+ changed the licensing causing Ubuntu/Debian not to be able to ship it,
+ because of legal issues in California.
+
+Package: geoip2-database-country
+Section: net
+Architecture: all
+Depends: ${misc:Depends}
+Description: GeoIP2 databases from MaxMind.com
+ GeoIP is a C library that enables the user to find the country that any
+ IP address or hostname originates from. It uses a file based database.
+ .
+ This database simply contains IP blocks as keys, and countries as values and
+ it should be more complete and accurate than using reverse DNS lookups.
+ .
+ This package contains the GeoLite2-Country database.
+ .
+ Previously, this package was called geoip-database and it contained
+ /usr/share/GeoIP/GeoIP.dat and /usr/share/GeoIP/GeoIPv6.dat. Later MaxMind
+ changed the licensing causing Ubuntu/Debian not to be able to ship it,
+ because of legal issues in California.

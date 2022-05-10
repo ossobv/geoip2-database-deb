@@ -1,0 +1,73 @@
+#!/bin/sh
+cd "$(dirname "$0")"
+set -eu
+
+if test -z "$MAXMIND_LICENSE_KEY"; then
+    # (pstore, see maxmind.com-geoip)
+    echo 'Please supply $MAXMIND_LICENSE_KEY in the environment' >&2
+    exit 1
+fi
+
+if test -z "$DEBVERSION"; then
+    echo 'Please supply $DEBVERSION in the environment, e.g. 1 or 0osso0' >&2
+    exit 1
+fi
+
+mkdir -p .cache
+
+for name in GeoLite2-Country GeoLite2-City GeoLite2-ASN; do
+    dest=.cache/$name.tar.gz
+    maxdays=10
+    if test -r "$dest" -a $(( $(date +%s) - $(stat -c%Y $dest) )) -lt $((
+            86400 * maxdays )); then
+        echo "$dest: already have a reasonably fresh one (max $maxdays days)"
+    else
+        url=https://download.maxmind.com/app/geoip_download
+        url="${url}?edition_id=${name}&license_key=${MAXMIND_LICENSE_KEY}"
+        url="${url}&suffix=tar.gz"
+        echo -n "Fetching $url ... "
+        sha256=$(curl -fsS "${url}.sha256")
+        curl -fsS -o ${dest} --remote-time --time-cond ${dest} "${url}"
+        echo $?
+        echo "$sha256" | sed -e "s@[[:blank:]].*@  $dest@" | sha256sum -c -
+    fi
+done
+
+# Turn date of the files into a version, using the latest date of all
+# source files:
+# 2022-05-02 20:30:03 -> 20220502+203003
+newest_source_version=$(
+    LC_ALL=C TZ=Etc/UTC stat -c%y .cache/*.tar.gz | sort | tail -n1 |
+    sed -e 's/[.].*//;s/-//g;s/ /+/;s/://g')
+
+upname=geoip2-database
+upversion=0+${newest_source_version}
+debepoch=
+debversion=${DEBVERSION}
+
+# Docker disallows certain tokens in versions.
+dockversion=$(echo build-${upname}-${upversion}-${debversion}-anydist |
+    sed -e 's/[^0-9A-Za-z_.-]/_/g')
+
+# Build the stuff.
+if ! docker build \
+    --pull \
+    --ulimit nofile=512 \
+    --build-arg upname=$upname \
+    --build-arg upversion=$upversion \
+    --build-arg debepoch=$debepoch \
+    --build-arg debversion=$debversion \
+    -t $dockversion \
+    -f Dockerfile \
+    .
+then
+    ret=$?
+    echo "fail ($ret)" >&2
+    exit $ret
+fi
+
+# Export the files to ./Dockerfile.out using stdout (so we don't get any
+# root owned files here):
+test -d Dockerfile.out || mkdir -p Dockerfile.out
+docker run $dockversion sh -c 'cd /dist; tar -zc *' |
+    tar -zxvC Dockerfile.out/ | sed -e 's#$# -> Dockerfile.out/#'

@@ -1,0 +1,5 @@
+geoip2-database (VERSION_GOES_HERE) stable; urgency=low
+
+  * Initial version. Note that newer versions reuse this changelog.
+
+ -- Walter Doekes (work) <wjdoekes@osso.nl>  Tue, 10 May 2022 11:08:40 +0200
