@@ -3,10 +3,6 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-export DEB_BUILD_ARCH=anyb
-export DEB_HOST_ARCH=anyh
-export DEB_TARGET_ARCH=anyt
-
 %:
 	dh $@ 
 
