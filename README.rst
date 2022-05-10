@@ -34,6 +34,13 @@ Those packages contain the ``GeoLite2-*.mmdb`` files. For instance::
     /usr/share/doc/geoip2-database-country/changelog.Debian.gz
 
 
+--------------------------------
+How do you obtain a license key?
+--------------------------------
+
+https://dev.maxmind.com/geoip/geolite2-free-geolocation-data?lang=en
+
+
 ------------------------------
 Why do you need a license key?
 ------------------------------
@@ -43,14 +50,14 @@ But due to the changed license they couldn't anymore.
 
 See: https://blog.maxmind.com/2019/12/significant-changes-to-accessing-and-using-geolite2-databases
 
-> The California Consumer Privacy Act (CCPA) mandates that businesses
-> honor valid "Do Not Sell" requests from California residents. In this
-> context, complying with a valid request involves MaxMind removing IP
-> addresses from the GeoLite2 data and communicating to GeoLite2 users
-> that the IP addresses in question should (immediately) not be utilized
-> for uses covered under the CCPA. Serving GeoLite2 database downloads on
-> a public page simply does not allow us to communicate and honor valid
-> "Do Not Sell" requests we receive from individuals.
+  The California Consumer Privacy Act (CCPA) mandates that businesses
+  honor valid "Do Not Sell" requests from California residents. In this
+  context, complying with a valid request involves MaxMind removing IP
+  addresses from the GeoLite2 data and communicating to GeoLite2 users
+  that the IP addresses in question should (immediately) not be utilized
+  for uses covered under the CCPA. Serving GeoLite2 database downloads on
+  a public page simply does not allow us to communicate and honor valid
+  "Do Not Sell" requests we receive from individuals.
 
 
 -------
@@ -59,18 +66,16 @@ License
 
 See: https://www.maxmind.com/en/end-user-license-agreement
 
-> The GeoLite2 end-user license agreement incorporates components of the
-> Creative Commons Attribution-ShareAlike 4.0 International License. The
-> attribution requirement may be met by including the following in all
-> advertising and documentation mentioning features of or use of GeoLite2
-> data.
-> See: https://creativecommons.org/licenses/by-sa/4.0/
+  The GeoLite2 end-user license agreement incorporates components of the
+  Creative Commons Attribution-ShareAlike 4.0 International License. The
+  attribution requirement may be met by including the following in all
+  advertising and documentation mentioning features of or use of GeoLite2
+  data. (See https://creativecommons.org/licenses/by-sa/4.0/ )
 
 
----------------
-Further reading
----------------
+-------------------------------------------
+Why the database change from .dat to .mmdb?
+-------------------------------------------
 
-* https://dev.maxmind.com/geoip/geolite2-free-geolocation-data?lang=en
 * https://blog.maxmind.com/2018/01/discontinuation-of-the-geolite-legacy-databases
 * https://blog.maxmind.com/2020/06/retirement-of-geoip-legacy-downloadable-databases-in-may-2022
