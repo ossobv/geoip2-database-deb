@@ -2,14 +2,11 @@
 cd "$(dirname "$0")"
 set -eu
 
-if test -z "${MAXMIND_LICENSE_KEY:-}"; then
+if test -z "${MAXMIND_LICENSE_KEY:-}" || test -z "${DEBVERSION:-}"; then
     # (pstore, see maxmind.com-geoip)
-    echo 'Please supply $MAXMIND_LICENSE_KEY in the environment' >&2
-    exit 1
-fi
-
-if test -z "${DEBVERSION:-}"; then
-    echo 'Please supply $DEBVERSION in the environment, e.g. 1 or 0osso0' >&2
+    cat >&2 <<EOF
+Please supply \$MAXMIND_LICENSE_KEY=... + \$DEBVERSION=0acme0 in the env
+EOF
     exit 1
 fi
 
@@ -18,7 +15,7 @@ mkdir -p .cache
 for name in GeoLite2-Country GeoLite2-City GeoLite2-ASN; do
     dest=.cache/$name.tar.gz
     maxdays=10
-    if test -r "$dest" -a $(( $(date +%s) - $(stat -c%Y $dest) )) -lt $((
+    if test -r "$dest" && test $(( $(date +%s) - $(stat -c%Y $dest) )) -lt $((
             86400 * maxdays )); then
         echo "$dest: already have a reasonably fresh one (max $maxdays days)"
     else
@@ -52,6 +49,7 @@ dockversion=$(echo build-${upname}-${upversion}-${debversion}-anydist |
 # Build the stuff.
 if ! docker build \
     --pull \
+    --progress=plain \
     --ulimit nofile=512 \
     --build-arg upname=$upname \
     --build-arg upversion=$upversion \

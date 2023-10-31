@@ -36,18 +36,40 @@ RUN dpkg-buildpackage --build=source,all -us -uc -sa
 # Install inside container and test
 RUN ls /build
 RUN dpkg -i /build/${upname}-*_${fullversion}_all.deb
-RUN value=$(echo $(mmdblookup --file /usr/share/GeoIP2/GeoLite2-City.mmdb \
-      --ip 217.21.207.11 city names en | sed -e 's/<.*>//;s/"//g') ) && \
-    echo "[$value]" && test "$value" = Groningen && \
-    value=$(echo $(mmdblookup --file /usr/share/GeoIP2/GeoLite2-City.mmdb \
-      --ip 217.21.207.1 city names en | sed -e 's/<.*>//;s/"//g') ) && \
-    echo "[$value]" && test "$value" = Amsterdam
-RUN value=$(echo $(mmdblookup --file /usr/share/GeoIP2/GeoLite2-Country.mmdb \
-      --ip 217.21.207.11 country names en | sed -e 's/<.*>//;s/"//g') ) && \
-    echo "[$value]" && test "$value" = Netherlands && \
-    value=$(echo $(mmdblookup --file /usr/share/GeoIP2/GeoLite2-Country.mmdb \
-      --ip 217.21.207.1 country names en | sed -e 's/<.*>//;s/"//g') ) && \
-    echo "[$value]" && test "$value" = Netherlands
+
+# mmdblookup --file /usr/share/GeoIP2/GeoLite2-City.mmdb --ip IP city names en
+RUN for ip_groningen in 217.21.192.1 217.21.207.11; do \
+      val=$(mmdblookup --file /usr/share/GeoIP2/GeoLite2-City.mmdb \
+            --ip $ip_groningen city names en | \
+            sed -ne 's/^[[:blank:]]*"\([^"]*\)" <utf8_string>.*/\1/p') && \
+      echo "lookup --ip $ip_groningen: got $val" && \
+      test "$val" = Groningen; \
+    done
+RUN for ip_groningen in 217.21.192.1 217.21.207.11; do \
+      val=$(mmdblookup --file /usr/share/GeoIP2/GeoLite2-City.mmdb \
+            --ip $ip_groningen country iso_code | \
+            sed -ne 's/^[[:blank:]]*"\([^"]*\)" <utf8_string>.*/\1/p') && \
+      echo "lookup --ip $ip_groningen: got $val" && \
+      test "$val" = NL; \
+    done
+# mmdblookup --file /usr/share/GeoIP2/GeoLite2-Country.mmdb --ip IP \
+#   country iso_codes
+RUN for ip_nl in 91.194.225.0 217.21.192.1; do \
+      val=$(mmdblookup --file /usr/share/GeoIP2/GeoLite2-Country.mmdb \
+            --ip $ip_nl country iso_code | \
+            sed -ne 's/^[[:blank:]]*"\([^"]*\)" <utf8_string>.*/\1/p') && \
+      echo "lookup --ip $ip_nl: got $val" && \
+      test "$val" = NL; \
+    done
+# mmdblookup --file /usr/share/GeoIP2/GeoLite2-ASN.mmdb --ip IP
+RUN val=$(mmdblookup --file /usr/share/GeoIP2/GeoLite2-ASN.mmdb --ip 1.1.1.1 |\
+          tr '\n' ' ' | sed -e 's/<[^>]*>//g;s/[0-9]\+/&,/;s/[[:blank:]]//g');\
+    echo "lookup --ip 1.1.1.1: got $val" && \
+    test "$val" = '{"autonomous_system_number":13335,"autonomous_system_organization":"CLOUDFLARENET"}'
+RUN val=$(mmdblookup --file /usr/share/GeoIP2/GeoLite2-ASN.mmdb --ip 8.8.8.8 |\
+          tr '\n' ' ' | sed -e 's/<[^>]*>//g;s/[0-9]\+/&,/;s/[[:blank:]]//g');\
+    echo "lookup --ip 8.8.8.8: got $val" && \
+    test "$val" = '{"autonomous_system_number":15169,"autonomous_system_organization":"GOOGLE"}'
 
 # Make files ready for export from container
 RUN mkdir -p /dist/${upname}_${fullversion} && \
