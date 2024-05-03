@@ -22,15 +22,21 @@ RUN tar -zxf GeoLite2-ASN.tar.gz && \
     find . -name '*.txt' -exec mv -f '{}' . \; && \
     find . ! -name '*.mmdb' ! -name '*.txt' -delete && \
     find . | sort >&2
+COPY source debian/source
 COPY changelog compat control rules \
      geoip2-database*.docs geoip2-database*.install \
      debian/
-COPY source debian/source
 
-# Set changelog version, build package
+# Set and check changelog version
 RUN sed -i -e "1s/([^)]*)/(${debepoch}${upversion}-${debversion})/" \
-    debian/changelog
-RUN cat debian/changelog >&2
+    debian/changelog && \
+    cat debian/changelog >&2 && \
+    if dpkg-genchanges -S 2>&1 | grep -v 'cannot read .*[.]dsc:' | grep ''; \
+    then echo >&2; \
+         echo 'please hardcode all but newest version in changelog' >&2; \
+         false; fi
+
+# Build
 RUN dpkg-buildpackage --build=source,all -us -uc -sa
 
 # Install inside container and test

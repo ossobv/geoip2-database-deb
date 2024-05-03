@@ -1,5 +1,11 @@
 geoip2-database (VERSION_GOES_HERE) stable; urgency=low
 
+  * Fix build by adding -L to curl.
+
+ -- Walter Doekes (work) <wjdoekes@osso.nl>  Fri, 03 May 2024 16:28:36 +0200
+
+geoip2-database (0+20231027+193017-0osso0) stable; urgency=low
+
   * Newer build. Note that newer versions reuse this changelog.
 
  -- Walter Doekes (work) <wjdoekes@osso.nl>  Tue, 31 Oct 2022 11:45:53 +0100

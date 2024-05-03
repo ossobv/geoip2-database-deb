@@ -15,18 +15,25 @@ mkdir -p .cache
 for name in GeoLite2-Country GeoLite2-City GeoLite2-ASN; do
     dest=.cache/$name.tar.gz
     maxdays=10
-    if test -r "$dest" && test $(( $(date +%s) - $(stat -c%Y $dest) )) -lt $((
+    if test -s "$dest" && test $(( $(date +%s) - $(stat -c%Y $dest) )) -lt $((
             86400 * maxdays )); then
         echo "$dest: already have a reasonably fresh one (max $maxdays days)"
     else
         url=https://download.maxmind.com/app/geoip_download
         url="${url}?edition_id=${name}&license_key=${MAXMIND_LICENSE_KEY}"
         url="${url}&suffix=tar.gz"
-        echo -n "Fetching $url ... "
-        sha256=$(curl -fsS "${url}.sha256")
-        curl -fsS -o ${dest} --remote-time --time-cond ${dest} "${url}"
-        echo $?
-        echo "$sha256" | sed -e "s@[[:blank:]].*@  $dest@" | sha256sum -c -
+        echo -n "Fetching $url (.sha256 first) ... "
+        sha256=$(curl -fLsS "${url}.sha256")
+        if test -z "$sha256"; then
+            echo "failed to fetch: ${url}.sha256" >&2
+            exit 1
+        fi
+        curl -fLsS -o ${dest} --remote-time --time-cond ${dest} "${url}"
+        if ! echo "$sha256" | sed -e "s@[[:blank:]].*@  $dest@" |
+                sha256sum -c -; then
+            mv -v "$dest" "${dest}.rejected"
+            exit 1
+        fi
     fi
 done
 
